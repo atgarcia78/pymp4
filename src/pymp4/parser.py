@@ -43,8 +43,7 @@ class PrefixedIncludingSize(Subconstruct):
             lengthfield_size = stream.tell() - offset_start
 
         stream2 = BoundBytesIO(stream, length - lengthfield_size)
-        obj = self.subcon._parse(stream2, context, path)
-        return obj
+        return self.subcon._parse(stream2, context, path)
 
     def _build(self, obj, stream, context, path):
         try:

@@ -35,7 +35,7 @@ class BoxUtil(object):
                     # ignore the except when the box is not found in sub-boxes
                     pass
 
-        raise BoxNotFound("could not find box of type: {}".format(type_))
+        raise BoxNotFound(f"could not find box of type: {type_}")
 
     @classmethod
     def index(cls, box, type_):
@@ -50,19 +50,17 @@ class BoxUtil(object):
             yield box
         elif hasattr(box, "children"):
             for sbox in box.children:
-                for fbox in cls.find(sbox, type_):
-                    yield fbox
+                yield from cls.find(sbox, type_)
 
     @classmethod
     def find_extended(cls, box, extended_type_):
-        if hasattr(box, "extended_type"):
-            if box.extended_type == extended_type_:
-                yield box
-            elif hasattr(box, "children"):
-                for sbox in box.children:
-                    for fbox in cls.find_extended(sbox, extended_type_):
-                        yield fbox
-        elif hasattr(box, "children"):
+        if hasattr(box, "extended_type") and box.extended_type == extended_type_:
+            yield box
+        elif (
+            hasattr(box, "extended_type")
+            and hasattr(box, "children")
+            or not hasattr(box, "extended_type")
+            and hasattr(box, "children")
+        ):
             for sbox in box.children:
-                for fbox in cls.find_extended(sbox, extended_type_):
-                    yield fbox
+                yield from cls.find_extended(sbox, extended_type_)
